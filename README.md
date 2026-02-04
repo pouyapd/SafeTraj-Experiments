@@ -19,7 +19,7 @@ This repository contains a public summary of my MSc research on **safe and expla
 The goal is to:
 - analyse **when and why** neural predictors fail,  
 - identify **unsafe input conditions**,  
-- and design **interpretable supervisors** that detect risky outputs before unsafe actions occur.
+- and design **interpretable supervisors** that assess risk and flag potentially unsafe behaviours before execution.
 
 The neural models analysed here were **pre-trained by an industrial partner**.  
 Only behaviour analysis and failure characterization are included — **no proprietary data or models** are shared.
@@ -89,7 +89,7 @@ This metric is essential for safety supervision.
 ---
 
 ## 4. Explainable AI Supervisor
-Interpretable models trained using labels derived from neural predictions:
+Interpretable models trained using labels derived from neural predictions, used as post-hoc analysis tools to explain and summarise trajectory behaviour.
 
 - **Decision Tree (depth=8)**  
 - **Random Forest**  
@@ -105,7 +105,7 @@ Interpretable models trained using labels derived from neural predictions:
 2. Linear velocity (v)  
 3. Rotational velocity (ω)
 
-These highlight risk zones and improve system trust.
+TThese highlight risk-sensitive regions of the input space and support interpretability and system understanding.
 
 ---
 
@@ -147,7 +147,7 @@ This work supports:
 - Safety monitoring in smart wheelchairs  
 - Trajectory supervision in mobile robots  
 - Navigation risk analysis  
-- Model-monitoring and OOD detection pipelines  
+- Model monitoring and behaviour-based risk analysis pipelines 
 
 The core principles generalize to any **safety-critical AI system** where robustness and interpretability are required.
 
