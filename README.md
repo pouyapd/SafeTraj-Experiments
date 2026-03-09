@@ -69,14 +69,22 @@ Strict success rate across all five models and three goal configurations (N=200 
 
 **Objective:** Identify which command regions trigger failed trajectory predictions.
 
-**Method:** N=200 inputs sampled uniformly across (φ, v, ω). Each model generates a predicted trajectory per input. Outcomes are aggregated into risk maps.
+**Method:** N=200 inputs sampled uniformly across the operational range (φ, v, ω). Each of the five models generates a predicted trajectory per input. Outcomes are labelled as Success (`d < 0.30 m`) or Failure (`d ≥ 0.30 m`) and aggregated into risk maps over the input space.
 
 **Key findings:**
 - Initial orientation φ near ±π (wheelchair facing backward) is the dominant failure trigger
 - Angular velocity ω has secondary influence
-- Clear *zones of exclusion* exist in the command space
+- Clear *zones of exclusion* exist in the command space — inputs that consistently produce failed trajectories regardless of goal
+
+**3D Failure Zone Map — Goal × Orientation × Outcome (DNN_LNA_on_wheel1):**
+
+The figure below shows all 600 samples (N=200 × 3 goals) plotted in a 3D space defined by goal position (X, Y) and initial orientation φ. Each point is coloured green (success) or red (failure). The three vertical clusters correspond to the three goal configurations (★). The red dashed lines mark the danger zone φ ≈ ±π — the orientation range where the wheelchair faces away from the goal, consistently triggering prediction failures.
+
+![3D Failure Zone Map](results/figures_exp1/3d_goal_theta_success_DNN_LNA_on_wheel1_v3.png)
 
 **Initial orientation vs. final distance to goal (all models and goals combined):**
+
+The scatter plot below confirms the pattern across all five models: failures (points above the d=0.30 m threshold line) are heavily concentrated at extreme orientations near ±π, while the central orientation range produces reliable trajectories.
 
 ![Theta vs Distance](results/figures_exp1/exp1_theta_vs_distance.png)
 
@@ -86,7 +94,7 @@ Strict success rate across all five models and three goal configurations (N=200 
 
 **Objective:** Evaluate how model performance changes across different target positions.
 
-**Method:** Three reference goals tested across all five models.
+**Method:** Three reference goals tested across all five models with strict and soft success criteria.
 
 | Goal | Position | Complexity |
 |------|----------|------------|
@@ -97,9 +105,11 @@ Strict success rate across all five models and three goal configurations (N=200 
 **Key findings:**
 - `DNN_LNA_closs2` achieves **99.3%** strict success across all goals
 - `DNN_LNA_closs1` achieves only **25.3%** strict success
-- Goal difficulty varies significantly across target positions
+- Goal difficulty varies significantly — off-axis and far goals expose the largest model differences
 
-**Goal difficulty map (average success rate over all models):**
+**Goal difficulty map (average strict success rate over all models):**
+
+The heatmap below shows the average success rate per goal configuration, averaged across all five models. Darker cells indicate harder goals where neural predictors fail more frequently. Goal C (1.5, −0.5) — the farthest off-axis target — is consistently the most challenging.
 
 ![Goal Difficulty Map](results/figures_exp2/exp2_goal_difficulty_map_avg.png)
 
@@ -111,8 +121,9 @@ A shallow decision tree (max depth 4) was fitted per model on the
 (φ, v, ω, GoalX, GoalY) → Success/Failure labels, revealing human-readable
 rules for when each model fails.
 
-**Best model — DNN_LNA_closs2 (99.3% success):** only 3 leaves, all predicting Success.
-The tree confirms near-universal reliability across the input space.
+**Best model — DNN_LNA_closs2 (99.3% success):** the tree has only 3 leaves, all
+predicting Success. This confirms near-universal reliability across the entire input
+space — the model succeeds for almost any combination of orientation, velocity, and goal.
 
 ![Decision Tree closs2](results/figures/tree_DNN_LNA_closs2.png)
 
