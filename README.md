@@ -116,11 +116,6 @@ The tree confirms near-universal reliability across the input space.
 
 ![Decision Tree closs2](results/figures/tree_DNN_LNA_closs2.png)
 
-**Worst model — DNN_LNA_closs1 (25.3% success):** goal position dominates the root split;
-the majority of inputs fail regardless of orientation or velocity.
-
-![Decision Tree closs1](results/figures/tree_DNN_LNA_closs1.png)
-
 > Full decision trees for all five models are available in [`results/figures/`](results/figures/).
 
 ---
@@ -161,7 +156,7 @@ SafeTraj-Experiments/
 ## Reproducing the Results
 
 > The DNN-LNA model weights are not publicly available. To reproduce:
-> 1. Obtain model weights from the [REXASI-PRO project](https://rexasi-pro.sparn.be/)
+> 1. Obtain model weights from the [REXASI-PRO project](https://rexasi-pro.spindoxlabs.com/)
 > 2. Place each model under `models/<model_name>/DNN_LNA_model/`
 > 3. Run the pipeline:
 
