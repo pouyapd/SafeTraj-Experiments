@@ -76,11 +76,11 @@ Strict success rate across all five models and three goal configurations (N=200 
 - Angular velocity ω has secondary influence
 - Clear *zones of exclusion* exist in the command space — inputs that consistently produce failed trajectories regardless of goal
 
-**3D Failure Zone Map — Goal × Orientation × Outcome (DNN_LNA_on_wheel1):**
+**3D Failure Zone Map — Orientation × Velocity × Final Distance (DNN_LNA_on_wheel1, Goal: (1.0, 0.0)):**
 
-The figure below shows all 600 samples (N=200 × 3 goals) plotted in a 3D space defined by goal position (X, Y) and initial orientation φ. Each point is coloured green (success) or red (failure). The three vertical clusters correspond to the three goal configurations (★). The red dashed lines mark the danger zone φ ≈ ±π — the orientation range where the wheelchair faces away from the goal, consistently triggering prediction failures.
+The figure below shows N=200 samples plotted in a 3D space defined by initial orientation φ, linear velocity v, and final distance to goal. Each point is coloured green (success) or red (failure). The gray horizontal plane marks the strict success threshold at d=0.30 m — all red points above this plane are failures. The red dashed lines mark the danger zone at φ ≈ ±π, where the wheelchair faces away from the goal and prediction failures consistently accumulate.
 
-![3D Failure Zone Map](results/figures_exp1/3d_goal_theta_success_DNN_LNA_on_wheel1_v3.png)
+![3D Failure Zone Map](results/figures_exp1/3d_theta_vel_dist_DNN_LNA_on_wheel1_goal_1.0_0.0.png)
 
 **Initial orientation vs. final distance to goal (all models and goals combined):**
 
