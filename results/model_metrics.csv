@@ -1,5 +1,0 @@
-Model,Accuracy,Notes
-DecisionTree_depth4,0.96,"Good train accuracy; SMOTE applied on train"
-RandomForest,0.98,"Best stability and balance"
-KNN_k7,0.95,"Tends to overpredict Success"
-DecisionTree_depth8,0.975,"Higher accuracy but some overfitting risk"
