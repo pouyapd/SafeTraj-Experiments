@@ -6,11 +6,12 @@
 [![TensorFlow](https://img.shields.io/badge/TensorFlow-2.12%2B-orange?logo=tensorflow)](https://www.tensorflow.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 [![Project: REXASI-PRO](https://img.shields.io/badge/EU%20Project-REXASI--PRO-blue)](https://rexasi-pro.spindoxlabs.com/)
+[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/pouyapd/SafeTraj-Experiments/blob/main/notebooks/demo_analysis.ipynb)
 
 ---
 
 **Author:** Pouya Bathaei Pourmand  
-**Affiliation:** MSc in Computer Engineering (AI) — University of Genoa / CNR-IEIIT, Italy  
+**Affiliation:** MSc in Computer Engineering (AI) — University of Genoa / CNR, Italy  
 **Project:** [REXASI-PRO](https://rexasi-pro.spindoxlabs.com/) — Reliable & Explainable AI for Smart Mobility (EU Horizon Europe)  
 **Supervisors:** Prof. Luca Oneto · Dr. Maurizio Mongelli · Dr. Sara Narteni
 
@@ -29,6 +30,26 @@ The core question is: **when and why do neural trajectory predictors fail?**
 All five models are treated as **black-box predictors** — evaluated purely through their outputs, without any access to weights or retraining.
 
 > ⚠️ The DNN-LNA model weights are **not included** (proprietary, REXASI-PRO project). Only derived results, CSVs and visualisations are public.
+
+---
+
+## Demo Notebook
+
+[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/pouyapd/SafeTraj-Experiments/blob/main/notebooks/demo_analysis.ipynb)
+
+A reproducible demo is available in [`notebooks/demo_analysis.ipynb`](notebooks/demo_analysis.ipynb).
+
+It reproduces the key findings using **synthetic data** that matches the operational ranges of the REXASI-PRO wheelchair platform — no proprietary model weights or confidential datasets required.
+
+**Covers:**
+- Exp1 — Input sensitivity analysis and risk maps
+- Exp2 — Goal difficulty analysis and model comparison
+- XAI supervisor — Decision Tree and Random Forest on synthetic data
+- Summary of all key findings
+
+> **Note:** The notebook uses synthetic data to illustrate methodology and reproduce statistical patterns.
+> Accuracy values reflect performance on synthetic data only.
+> Real experimental results are in `results/figures_exp1/`, `results/figures_exp2/`, and `results/tables/`.
 
 ---
 
@@ -74,17 +95,13 @@ Strict success rate across all five models and three goal configurations (N=200 
 **Key findings:**
 - Initial orientation φ near ±π (wheelchair facing backward) is the dominant failure trigger
 - Angular velocity ω has secondary influence
-- Clear *zones of exclusion* exist in the command space — inputs that consistently produce failed trajectories regardless of goal
+- Clear *zones of exclusion* exist in the command space
 
-**3D Failure Zone Map — Orientation × Velocity × Final Distance (DNN_LNA_on_wheel1, Goal: (1.0, 0.0)):**
-
-The figure below shows N=200 samples plotted in a 3D space defined by initial orientation φ, linear velocity v, and final distance to goal. Each point is coloured green (success) or red (failure). The gray horizontal plane marks the strict success threshold at d=0.30 m — all red points above this plane are failures. The red dashed lines mark the danger zone at φ ≈ ±π, where the wheelchair faces away from the goal and prediction failures consistently accumulate.
+**3D Failure Zone Map:**
 
 ![3D Failure Zone Map](results/figures_exp1/3d_theta_vel_dist_DNN_LNA_on_wheel1_goal_1.0_0.0.png)
 
-**Initial orientation vs. final distance to goal (all models and goals combined):**
-
-The scatter plot below confirms the pattern across all five models: failures (points above the d=0.30 m threshold line) are heavily concentrated at extreme orientations near ±π, while the central orientation range produces reliable trajectories.
+**Initial orientation vs. final distance to goal:**
 
 ![Theta vs Distance](results/figures_exp1/exp1_theta_vs_distance.png)
 
@@ -105,11 +122,9 @@ The scatter plot below confirms the pattern across all five models: failures (po
 **Key findings:**
 - `DNN_LNA_closs2` achieves **99.3%** strict success across all goals
 - `DNN_LNA_closs1` achieves only **25.3%** strict success
-- Goal difficulty varies significantly — off-axis and far goals expose the largest model differences
+- Goal difficulty varies significantly across the workspace
 
-**Goal difficulty map (average strict success rate over all models):**
-
-The heatmap below shows the average success rate per goal configuration, averaged across all five models. Darker cells indicate harder goals where neural predictors fail more frequently. Goal C (1.5, −0.5) — the farthest off-axis target — is consistently the most challenging.
+**Goal difficulty map:**
 
 ![Goal Difficulty Map](results/figures_exp2/exp2_goal_difficulty_map_avg.png)
 
@@ -120,10 +135,6 @@ The heatmap below shows the average success rate per goal configuration, average
 A shallow decision tree (max depth 4) was fitted per model on the
 (φ, v, ω, GoalX, GoalY) → Success/Failure labels, revealing human-readable
 rules for when each model fails.
-
-**Best model — DNN_LNA_closs2 (99.3% success):** the tree has only 3 leaves, all
-predicting Success. This confirms near-universal reliability across the entire input
-space — the model succeeds for almost any combination of orientation, velocity, and goal.
 
 ![Decision Tree closs2](results/figures/tree_DNN_LNA_closs2.png)
 
@@ -145,6 +156,9 @@ The identified risk regions support three concrete run-time applications:
 
 ```
 SafeTraj-Experiments/
+│
+├── notebooks/
+│   └── demo_analysis.ipynb   # Reproducible demo with synthetic data
 │
 ├── src/
 │   ├── config.py             # Central configuration (ranges, goals, thresholds)
@@ -176,11 +190,14 @@ pip install -r requirements.txt
 python src/evaluate.py --model_root /path/to/models --output_dir results/
 ```
 
+For a reproducible demo without model weights, see the [demo notebook](notebooks/demo_analysis.ipynb).
+
 ---
 
 ## Related Projects
 
-**[SafeTraj-Prototype](https://github.com/pouyapd/SafeTraj-Prototype)** — A personal open-source Python toolkit for trajectory behaviour analysis and risk scoring of neural motion predictors. Includes an interactive Streamlit dashboard, risk estimation, and an LLM-based safety reporting module. Developed independently to extend and complement the analysis in this thesis.
+- **[SafeTraj-Prototype](https://github.com/pouyapd/SafeTraj-Prototype)** — Trajectory behaviour analysis toolkit with live Streamlit dashboard and REST API
+- **[SafeNav-RL](https://github.com/pouyapd/SafeNav-RL)** — Safety-constrained RL navigation agent extending this analysis work
 
 ---
 
