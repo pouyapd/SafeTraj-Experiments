@@ -48,8 +48,6 @@ All five models are treated as black-box predictors and are evaluated exclusivel
 
 ## Demo Notebook
 
-[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/pouyapd/SafeTraj-Experiments/blob/main/notebooks/demo_analysis.ipynb)
-
 A reproducible demonstration is available in:
 
 ```text
@@ -72,18 +70,20 @@ The notebook reproduces the main methodology using synthetic data that follows t
 
 ## Problem Setting
 
-Each navigation scenario is defined by three motion commands:
+Each navigation scenario is defined by a target goal position and three motion commands:
 
 | Symbol | Variable            | Operational Range   |
 | ------ | ------------------- | ------------------- |
+| GoalX  | Goal X coordinate   | Goal dependent      |
+| GoalY  | Goal Y coordinate   | Goal dependent      |
 | θ      | Initial orientation | [−π, π] rad         |
 | v      | Linear velocity     | [−1.05, 2.88] m/s   |
 | ω      | Angular velocity    | [−1.99, 1.99] rad/s |
 
-Together with a target goal position, these variables are provided to a pretrained DNN-LNA model, which predicts a future trajectory:
+These inputs are provided to a pretrained DNN-LNA model, which predicts a future trajectory:
 
 ```text
-X̂ = f(θ, v, ω, GoalX, GoalY)
+X̂ = f(GoalX, GoalY, θ, v, ω)
 ```
 
 The output trajectory consists of a sequence of future wheelchair states over a prediction horizon of 30 time steps.
@@ -102,7 +102,7 @@ d < 0.30 m
 * Near-success: 0.30 ≤ d < 0.50 m
 * Failure: d ≥ 0.50 m
 
-where d represents the final distance between the predicted trajectory endpoint and the target goal.
+where `d` represents the final distance between the predicted trajectory endpoint and the target goal.
 
 ---
 
@@ -128,11 +128,9 @@ Identify which command regions are associated with failed trajectory predictions
 
 #### Method
 
-A total of 200 input combinations were uniformly sampled across the operational ranges of:
+The DNN-LNA models receive five inputs: GoalX, GoalY, θ, v and ω.
 
-* Initial orientation θ
-* Linear velocity v
-* Angular velocity ω
+For Experiment 1, the goal position was fixed while 200 combinations of θ, v and ω were uniformly sampled across their operational ranges.
 
 Each sampled configuration was evaluated by all five pretrained DNN-LNA models.
 
@@ -193,7 +191,7 @@ Three representative goals were tested using both strict and soft success criter
 To improve interpretability, a shallow Decision Tree was trained for each model using:
 
 ```text
-(θ, v, ω, GoalX, GoalY)
+(GoalX, GoalY, θ, v, ω)
 ```
 
 as inputs and:
@@ -264,35 +262,20 @@ SafeTraj-Experiments/
 
 ## Reproducing the Results
 
-The original DNN-LNA model weights are not publicly available.
+The original DNN-LNA model weights are not publicly available because they are proprietary assets of the REXASI-PRO project.
 
-To reproduce the experiments:
-
-1. Obtain the pretrained models from the REXASI-PRO project
-2. Place each model under:
-
-```text
-models/<model_name>/DNN_LNA_model/
-```
-
-3. Execute:
+Users with access to the original models can adapt the loading functions in `src/model_utils.py` and execute:
 
 ```bash
 pip install -r requirements.txt
-python src/evaluate.py --model_root /path/to/models --output_dir results/
+python src/evaluate.py
 ```
 
-For a fully reproducible public example, use:
+For a fully reproducible public example, see:
 
 ```text
 notebooks/demo_analysis.ipynb
 ```
-
----
-
-## Related Projects
-
-* **SafeTraj-Prototype** — Interactive trajectory analysis toolkit with Streamlit dashboard and REST API
 
 ---
 
