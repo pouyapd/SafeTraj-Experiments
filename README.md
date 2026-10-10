@@ -19,6 +19,18 @@ Research artifact accompanying the MSc thesis
 > [!IMPORTANT]
 > The five DNN-LNA models analysed in this work are **proprietary assets of the REXASI-PRO project and are not included** in this repository. The repository publishes the evaluation code, the derived results (tables, figures, extracted decision trees) and a synthetic-data demonstration notebook. See [Reproducibility](#reproducibility) for what can and cannot be re-run.
 
+### At a glance
+
+<p align="center">
+  <img src="docs/figures/derived/orientation_sensitivity.png" alt="Strict success rate per initial-orientation bin for the five DNN-LNA models at the three goals; closs1 drops to near zero for orientations near plus or minus pi, closs2 stays near 100 percent" width="900">
+</p>
+<p align="center"><em>Strict success per initial-orientation bin for all five models and the three goals — a derived view of the published results (<code>results/tables/exp1_theta_sensitivity.csv</code>), not a thesis figure.</em></p>
+
+- Five pretrained trajectory predictors, each queried with the same 200 sampled commands for 3 goals (600 trajectories per model) and treated as black boxes.
+- Strict success (final distance < 0.30 m) ranges from **25.3 % to 99.3 %** across models evaluated under identical conditions.
+- Failures concentrate in identifiable command regions, chiefly initial orientations near ±π; depth-4 decision trees describe them as explicit rules (training accuracy 0.85–0.99).
+- The numbers in this README can be checked against the published result files: `python tools/verify_results.py` (42 checks, all pass). See [Verifying the published results](#verifying-the-published-results).
+
 ---
 
 ## Contents
@@ -33,6 +45,8 @@ Research artifact accompanying the MSc thesis
 - [Explainability](#explainability)
 - [Practical Implications](#practical-implications)
 - [Reproducibility](#reproducibility)
+- [Verifying the published results](#verifying-the-published-results)
+- [Additional views of the published results](#additional-views-of-the-published-results)
 - [Repository Structure](#repository-structure)
 - [Getting Started](#getting-started)
 - [Demo Notebook](#demo-notebook)
@@ -286,12 +300,42 @@ The consistency between risk maps, success-rate tables and decision-tree rules i
 
 ---
 
+## Verifying the published results
+
+The thesis results are published as files; these tools check them without the models and without changing anything:
+
+| Command | What it checks |
+|---|---|
+| `python tools/manifest.py --check` | every published table, figure, notebook and source file still has the SHA-256 recorded in [`docs/artifacts.sha256`](docs/artifacts.sha256) |
+| `python tools/verify_results.py` | 42 arithmetic checks that recompute the thesis numbers from `results/tables/`: per-goal and overall strict success (Table 4.1), goal-B and overall average distance (Table 4.2), decision-tree class counts, and the consistency of the orientation-bin tables |
+| `pytest` | the two checks above, plus a smoke test that runs the unchanged `src/` pipeline end to end with a synthetic stand-in model (no TensorFlow needed) |
+
+[`docs/ARTIFACTS.md`](docs/ARTIFACTS.md) lists every result file with its role. Some files in `results/tables/` do not match the thesis tables; the index marks which ones, and none of them is the source of a number in this README.
+
+## Additional views of the published results
+
+These figures are drawn from the published tables by `python tools/derived_figures.py` and saved under `docs/figures/derived/`. They are not thesis figures; the intervals in the first one are an additional calculation.
+
+<p align="center">
+  <img src="docs/figures/derived/success_with_intervals.png" alt="Strict success per model and goal with 95 percent Wilson intervals" width="620">
+</p>
+<p align="center"><em>Thesis Table 4.1 with 95 % Wilson intervals for 200 inputs per cell. The model ranking does not depend on the sample size, except that mse and sinu overlap at goals B and C.</em></p>
+
+<p align="center">
+  <img src="docs/figures/derived/failure_severity.png" alt="Mean and range of the final distance of failed trajectories per model and goal" width="620">
+</p>
+<p align="center"><em>How far the failed trajectories end from the goal. The four failures of closs2 stay within 0.36 m (near-misses); failures of closs1 reach almost 1 m.</em></p>
+
+---
+
 ## Repository Structure
 
 ```text
 SafeTraj-Experiments/
 ├── docs/
-│   └── figures/                    # thesis figures reproduced in this README
+│   ├── ARTIFACTS.md                # index of every result file and its status
+│   ├── artifacts.sha256            # SHA-256 manifest of the published artifacts
+│   └── figures/                    # thesis figures reproduced in this README (derived/: additional views)
 │       ├── pipeline.png            # methodology pipeline (thesis Fig. 3.1)
 │       ├── trajectories_closs1.png # representative trajectories (Fig. 4.1)
 │       ├── trajectories_closs2.png # representative trajectories (Fig. 4.2)
@@ -303,6 +347,8 @@ SafeTraj-Experiments/
 │   ├── config.py                   # seed, model names, input ranges, goals, thresholds, paths
 │   ├── model_utils.py              # SavedModel loading, batched inference, final-distance computation
 │   └── evaluate.py                 # Experiment 1 + Experiment 2 pipeline and figure generation
+├── tools/                          # read-only checks: manifest.py, verify_results.py, derived_figures.py
+├── tests/                          # artifact integrity, thesis-number consistency, pipeline smoke test
 ├── results/
 │   ├── figures/                    # thesis tables (PNG) and decision trees for all five models
 │   ├── figures_exp1/               # Experiment 1 figures
@@ -311,6 +357,7 @@ SafeTraj-Experiments/
 │   ├── extracted_rules.txt         # earlier exploratory depth-8 tree (see Provenance)
 │   └── feature_importances.txt     # earlier exploratory depth-8 tree (see Provenance)
 ├── requirements.txt
+├── requirements-dev.txt            # tools and tests (no TensorFlow)
 ├── LICENSE
 └── README.md
 ```
@@ -331,9 +378,16 @@ pip install -r requirements.txt
 python src/evaluate.py --model_root /path/to/models --output_dir results
 ```
 
-This samples `N = 200` inputs (seed 42), runs both experiments for the five models and three goals, and writes `exp1_inputs.npy`, `exp1_samples.csv`, `exp2_goal_summary.csv` and the Exp1/Exp2 figures under `--output_dir`. Model names, input ranges, goals and thresholds are set in `src/config.py`.
+This samples `N = 200` inputs (seed 42), runs both experiments for the five models and three goals, and writes `exp1_inputs.npy`, `exp1_samples.csv` and `exp2_goal_summary.csv` to `<output_dir>/tables/` and the Exp1/Exp2 figures to `<output_dir>/figures_exp1/` and `<output_dir>/figures_exp2/`. Model names, input ranges, goals and thresholds are set in `src/config.py`.
 
-**Without the models**, use the demonstration notebook below or inspect the published results in `results/`.
+**Without the models**, use the demonstration notebook below or inspect and verify the published results:
+
+```bash
+pip install -r requirements-dev.txt
+python tools/verify_results.py      # 42 consistency checks against the thesis tables
+python tools/manifest.py --check    # published artifacts unchanged
+pytest                              # both checks + smoke test of the src/ pipeline
+```
 
 ---
 
