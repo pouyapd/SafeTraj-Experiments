@@ -35,7 +35,7 @@ Every file below is part of the thesis record and is kept unchanged: [`docs/arti
 ## Notes for readers
 
 - In the demo notebook, the risk-map cell plots the share of trajectories with `distance >= 0.50 m` (the soft *failure* class) under the colour-bar label "Strict Failure Rate". The notebook uses synthetic data and is kept unchanged.
-- The README's *Getting Started* says that `src/evaluate.py` writes `exp1_inputs.npy`, `exp1_samples.csv` and `exp2_goal_summary.csv` under `--output_dir`; the code writes them under `<output_dir>/tables/` (figures go to `figures_exp1/` and `figures_exp2/`).
+- `src/evaluate.py` writes `exp1_inputs.npy`, `exp1_samples.csv` and `exp2_goal_summary.csv` to `<output_dir>/tables/` and its figures to `<output_dir>/figures_exp1/` and `<output_dir>/figures_exp2/`, as the README's *Getting Started* describes. These three per-run tables are not part of the published results; `results/tables/` holds only the files listed above.
 
 ## Derived figures (`docs/figures/derived/`, not thesis figures)
 
