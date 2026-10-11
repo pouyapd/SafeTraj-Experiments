@@ -319,7 +319,7 @@ These figures are drawn from the published tables by `python tools/derived_figur
 <p align="center">
   <img src="docs/figures/derived/success_with_intervals.png" alt="Strict success per model and goal with 95 percent Wilson intervals" width="620">
 </p>
-<p align="center"><em>Thesis Table 4.1 with 95 % Wilson intervals for 200 inputs per cell. The model ranking does not depend on the sample size, except that mse and sinu overlap at goals B and C.</em></p>
+<p align="center"><em>Thesis Table 4.1 with 95 % Wilson intervals for 200 inputs per cell. At every goal the point estimates rank closs2 > on_wheel1 > mse > sinu > closs1. The intervals of mse and sinu overlap at all three goals, and those of mse and on_wheel1 at goal A; the 200 inputs do not separate these pairs. All other pairs have non-overlapping intervals.</em></p>
 
 <p align="center">
   <img src="docs/figures/derived/failure_severity.png" alt="Mean and range of the final distance of failed trajectories per model and goal" width="620">
