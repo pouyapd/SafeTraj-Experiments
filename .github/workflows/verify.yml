@@ -1,0 +1,24 @@
+name: verify-results
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install (no TensorFlow needed)
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+      - name: Published artifacts unchanged
+        run: python tools/manifest.py --check
+      - name: Result tables reproduce the thesis numbers
+        run: python tools/verify_results.py
+      - name: Tests
+        run: pytest -q
